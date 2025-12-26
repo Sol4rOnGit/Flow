@@ -34,12 +34,20 @@ public class PlayerCar : MonoBehaviour
     private float carMotorForce = 0;
     private float carBrakeForce = 0;
 
+    //Decorative
+    [SerializeField] private Transform steeringWheelTransform;
+    [SerializeField] private int maxDegreesRotationForSteeringWheel = 900;
+    [SerializeField] private float rotateSpeed = 1.0f;
+    private Vector3 defaultSteeringWheelRotation;
+
     private void Awake()
     {
         var vehicleMap = InputActions.FindActionMap("Vehicle");
         accelerateInput = vehicleMap.FindAction("Accelerate");
         brakeInput = vehicleMap.FindAction("Brake");
         steeringInput = vehicleMap.FindAction("Steering");
+
+        defaultSteeringWheelRotation = steeringWheelTransform.localEulerAngles;
     }
 
     void Start()
@@ -51,6 +59,7 @@ public class PlayerCar : MonoBehaviour
     void Update()
     {
         GetInput();
+        RotateSteeringWheel();
     }
 
     private void OnEnable()
@@ -88,6 +97,25 @@ public class PlayerCar : MonoBehaviour
         var currentSteeringAngle = maxSteeringAngleDegrees * steeringValue;
         FLWheelCollider.steerAngle = currentSteeringAngle;
         FRWheelCollider.steerAngle = currentSteeringAngle;
+    }
+
+    private void RotateSteeringWheel()
+    {
+        /*Vector3 newRotation = defaultSteeringWheelRotation;
+        newRotation.z += -steeringValue * maxDegreesRotationForSteeringWheel;
+
+        steeringWheelTransform.localEulerAngles = newRotation;*/
+
+        Vector3 targetEulerRotation = defaultSteeringWheelRotation;
+        targetEulerRotation.z += -steeringValue * maxDegreesRotationForSteeringWheel;
+        Quaternion targetRotation = Quaternion.Euler(targetEulerRotation);
+
+        // Smoothly interpolate from current rotation to target rotation
+        steeringWheelTransform.localRotation = Quaternion.Lerp(
+            steeringWheelTransform.localRotation,
+            targetRotation,
+            Time.deltaTime * rotateSpeed
+        );
     }
 
     private void CalculateMotorForce()

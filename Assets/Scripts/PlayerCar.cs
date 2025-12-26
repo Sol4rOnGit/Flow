@@ -1,3 +1,5 @@
+using System;
+using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -9,13 +11,17 @@ public class PlayerCar : MonoBehaviour
     InputAction brakeInput;
     InputAction steeringInput;
 
+    InputAction switchCameraInput;
+
     //Performance stats
     [Header("Performance Variables")]
-    [SerializeField] private int horsePower = 500;
+    [SerializeField] private int engineForce = 500;
+    [SerializeField] private int maxBrakeForce = 500;
 
     [SerializeField] private int maxSteeringAngleDegrees = 23;
 
     //Wheel transforms & Colliders
+    [Header("Wheel transforms and Colliders")]
     [SerializeField] private Transform FLWheelTransform;
     [SerializeField] private Transform FRWheelTransform;
     [SerializeField] private Transform RLWheelTransform;
@@ -34,7 +40,13 @@ public class PlayerCar : MonoBehaviour
     private float carMotorForce = 0;
     private float carBrakeForce = 0;
 
+    //Cameras
+    [Header("Cameras")]
+    [SerializeField] private Camera[] Cameras;
+    private int currentCameraIndex = 0;
+
     //Decorative
+    [Header("Decorative")]
     [SerializeField] private Transform steeringWheelTransform;
     [SerializeField] private int maxDegreesRotationForSteeringWheel = 900;
     [SerializeField] private float rotateSpeed = 1.0f;
@@ -42,10 +54,13 @@ public class PlayerCar : MonoBehaviour
 
     private void Awake()
     {
+        //Input mapping
         var vehicleMap = InputActions.FindActionMap("Vehicle");
         accelerateInput = vehicleMap.FindAction("Accelerate");
         brakeInput = vehicleMap.FindAction("Brake");
         steeringInput = vehicleMap.FindAction("Steering");
+
+        switchCameraInput = vehicleMap.FindAction("SwitchCamera");
 
         defaultSteeringWheelRotation = steeringWheelTransform.localEulerAngles;
     }
@@ -60,6 +75,7 @@ public class PlayerCar : MonoBehaviour
     {
         GetInput();
         RotateSteeringWheel();
+        CameraSwitch();
     }
 
     private void OnEnable()
@@ -67,6 +83,7 @@ public class PlayerCar : MonoBehaviour
         accelerateInput.Enable();
         brakeInput.Enable();
         steeringInput.Enable();
+        switchCameraInput.Enable();
     }
 
     private void OnDisable()
@@ -74,6 +91,7 @@ public class PlayerCar : MonoBehaviour
         accelerateInput.Disable();
         brakeInput.Disable();
         steeringInput.Disable();
+        switchCameraInput.Disable();
     }
 
     private void FixedUpdate()
@@ -88,8 +106,6 @@ public class PlayerCar : MonoBehaviour
         acceleratePedalPressure = accelerateInput.ReadValue<float>();
         brakePedalPressure = brakeInput.ReadValue<float>();
         steeringValue = steeringInput.ReadValue<float>();
-        Debug.Log($"Accelerate Pedal Pressure: {acceleratePedalPressure}");
-        Debug.Log($"Brake Pedal Pressure: {brakePedalPressure}");
     }
 
     private void CalculateSteering()
@@ -99,29 +115,10 @@ public class PlayerCar : MonoBehaviour
         FRWheelCollider.steerAngle = currentSteeringAngle;
     }
 
-    private void RotateSteeringWheel()
-    {
-        /*Vector3 newRotation = defaultSteeringWheelRotation;
-        newRotation.z += -steeringValue * maxDegreesRotationForSteeringWheel;
-
-        steeringWheelTransform.localEulerAngles = newRotation;*/
-
-        Vector3 targetEulerRotation = defaultSteeringWheelRotation;
-        targetEulerRotation.z += -steeringValue * maxDegreesRotationForSteeringWheel;
-        Quaternion targetRotation = Quaternion.Euler(targetEulerRotation);
-
-        // Smoothly interpolate from current rotation to target rotation
-        steeringWheelTransform.localRotation = Quaternion.Lerp(
-            steeringWheelTransform.localRotation,
-            targetRotation,
-            Time.deltaTime * rotateSpeed
-        );
-    }
-
     private void CalculateMotorForce()
     {
-        carMotorForce = horsePower * acceleratePedalPressure;
-        carBrakeForce = 3 * horsePower * brakePedalPressure;
+        carMotorForce = engineForce * acceleratePedalPressure;
+        carBrakeForce = maxBrakeForce * brakePedalPressure;
     }
 
     private void GiveWheelsPower()
@@ -132,8 +129,50 @@ public class PlayerCar : MonoBehaviour
 
     private void GiveWheelsBrakeForce()
     {
+        FLWheelCollider.brakeTorque = carBrakeForce;
+        FRWheelCollider.brakeTorque = carBrakeForce;
         RLWheelCollider.brakeTorque = carBrakeForce;
         RRWheelCollider.brakeTorque = carBrakeForce;
     }
 
+    //Decorative
+    private void RotateSteeringWheel()
+    {
+        //Get rotation
+        Vector3 targetEulerRotation = defaultSteeringWheelRotation;
+        targetEulerRotation.z += -steeringValue * maxDegreesRotationForSteeringWheel;
+        Quaternion targetRotation = Quaternion.Euler(targetEulerRotation);
+
+        //Interpolate
+        steeringWheelTransform.localRotation = Quaternion.Lerp(
+            steeringWheelTransform.localRotation,
+            targetRotation,
+            Time.deltaTime * rotateSpeed
+        );
+    }
+
+    //Camera switching
+    private void CameraSwitch()
+    {
+        if (!switchCameraInput.WasPressedThisFrame())
+        {
+            return;
+        }
+
+        Debug.Log("switchCameraInput was pressed.");
+
+        currentCameraIndex = (currentCameraIndex + 1) % Cameras.Length;
+
+        EnableOnlyIndexedCamera();
+
+    }
+
+    private void EnableOnlyIndexedCamera()
+    {
+        for (int i = 0; i < Cameras.Length; i++){
+            Cameras[i].gameObject.SetActive(false);
+        }
+
+        Cameras[currentCameraIndex].gameObject.SetActive(true);
+    }
 }

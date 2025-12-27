@@ -8,7 +8,6 @@ public class CarSpawner : MonoBehaviour
     [SerializeField] private float maxDelay;
     [SerializeField] private float minDelay;
     [SerializeField] private GameObject[] cars;
-    [SerializeField] private float carInitSpeed;
 
     void Start()
     {
@@ -17,7 +16,9 @@ public class CarSpawner : MonoBehaviour
 
     void Update()
     {
+
     }
+
 
     private IEnumerator SpawnCars()
     {
@@ -38,22 +39,12 @@ public class CarSpawner : MonoBehaviour
         int randomLaneIndex = Random.Range(0, lanes.Length);
         Transform spawnposition = lanes[randomLaneIndex].transform;
 
-        /*
-        int randomSpeed;
-        if (lanes.Length - 1 == randomLaneIndex)
-        {
-            randomSpeed = Random.Range(30, 32);
-        }
-        else { randomSpeed = Random.Range(28, 32); }*/
-
         int randomCarIndex = Random.Range(0, cars.Length);
         GameObject currentCar = cars[randomCarIndex].gameObject;
 
-        //Instantiate the random car at spawn position
         GameObject carInstance = Instantiate(currentCar, spawnposition.position, spawnposition.rotation);
-        //carInstance.GetComponent<AICar>().drivingSpeed = randomSpeed;
 
-        //Small chance of another car spawning on antoher lane
+        //Small chance of another car spawning on another lane
         int randomInt = Random.Range(1, 100);
         if(randomInt < 20) //1 in 5 cars
         {
@@ -69,7 +60,13 @@ public class CarSpawner : MonoBehaviour
             GameObject currentCar2 = cars[randomCarIndex2].gameObject;
 
             GameObject carInstance2 = Instantiate(currentCar2, spawnposition2.position, spawnposition2.rotation);
-            //carInstance2.GetComponent<AICar>().drivingSpeed = randomSpeed;
         }
     }
+}
+
+public class TrafficCarData
+{
+    public float positionX;
+    public int laneIndex;
+    public float speed;
 }

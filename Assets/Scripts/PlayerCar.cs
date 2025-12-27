@@ -1,7 +1,10 @@
 using System;
+using System.Collections.Generic;
 using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
+using TMPro;
 
 public class PlayerCar : MonoBehaviour
 {
@@ -10,6 +13,9 @@ public class PlayerCar : MonoBehaviour
     InputAction accelerateInput;
     InputAction brakeInput;
     InputAction steeringInput;
+
+    InputAction gearUpInput;
+    InputAction gearDownInput;
 
     InputAction switchCameraInput;
 
@@ -32,10 +38,25 @@ public class PlayerCar : MonoBehaviour
     [SerializeField] private WheelCollider RLWheelCollider;
     [SerializeField] private WheelCollider RRWheelCollider;
 
+    //Other Car Parts
+    [Header("Other Car Parts")]
+    [SerializeField] private AudioSource engineSound;
+    private Rigidbody rb;
+
     //Car running variables
     private float acceleratePedalPressure = 0;
     private float brakePedalPressure = 0;
     private float steeringValue = 0;
+
+    private float velocityms = 0;
+
+    private enum AutoGear
+    {
+        Reverse = -1,
+        Neutral = 0,
+        Forward = 1
+    }
+    private AutoGear currentGear = AutoGear.Forward;
 
     private float carMotorForce = 0;
     private float carBrakeForce = 0;
@@ -44,6 +65,15 @@ public class PlayerCar : MonoBehaviour
     [Header("Cameras")]
     [SerializeField] private Camera[] Cameras;
     private int currentCameraIndex = 0;
+
+    //UI
+    [Header("UI")]
+    [SerializeField] private TMP_Text speedTextDisplay;
+    [SerializeField] private TMP_Text gearTextDisplay;
+    [SerializeField] private Slider accelerationDisplay;
+    [SerializeField] private Slider brakeDisplay;
+    [SerializeField] private Slider clutchDisplay;
+    [SerializeField] private Slider steeringDisplay;
 
     //Decorative
     [Header("Decorative")]
@@ -60,8 +90,15 @@ public class PlayerCar : MonoBehaviour
         brakeInput = vehicleMap.FindAction("Brake");
         steeringInput = vehicleMap.FindAction("Steering");
 
+        gearUpInput = vehicleMap.FindAction("GearUp");
+        gearDownInput = vehicleMap.FindAction("GearDown");
+
         switchCameraInput = vehicleMap.FindAction("SwitchCamera");
 
+        //Car Parts
+        rb = GetComponent<Rigidbody>();
+
+        //Decor
         defaultSteeringWheelRotation = steeringWheelTransform.localEulerAngles;
     }
 
@@ -70,28 +107,22 @@ public class PlayerCar : MonoBehaviour
 
     }
 
-    // Update is called once per frame
     void Update()
     {
+        velocityms = rb.linearVelocity.magnitude;
+
         GetInput();
+        ChangeGearAutomatic();
         RotateSteeringWheel();
+
+        //ProduceDownforce();
+
+        //UI
+        UpdateUI();
+
+        //Decor
         CameraSwitch();
-    }
-
-    private void OnEnable()
-    {
-        accelerateInput.Enable();
-        brakeInput.Enable();
-        steeringInput.Enable();
-        switchCameraInput.Enable();
-    }
-
-    private void OnDisable()
-    {
-        accelerateInput.Disable();
-        brakeInput.Disable();
-        steeringInput.Disable();
-        switchCameraInput.Disable();
+        UpdateAudio();
     }
 
     private void FixedUpdate()
@@ -100,7 +131,32 @@ public class PlayerCar : MonoBehaviour
         CalculateMotorForce();
         GiveWheelsPower();
         GiveWheelsBrakeForce();
+        UpdateAllWheels();
     }
+    private void OnEnable()
+    {
+        accelerateInput.Enable();
+        brakeInput.Enable();
+        steeringInput.Enable();
+
+        gearUpInput.Enable();
+        gearDownInput.Enable();
+
+        switchCameraInput.Enable();
+    }
+
+    private void OnDisable()
+    {
+        accelerateInput.Disable();
+        brakeInput.Disable();
+        steeringInput.Disable();
+
+        gearUpInput.Disable();
+        gearDownInput.Disable();
+
+        switchCameraInput.Disable();
+    }
+
     private void GetInput()
     {
         acceleratePedalPressure = accelerateInput.ReadValue<float>();
@@ -123,8 +179,23 @@ public class PlayerCar : MonoBehaviour
 
     private void GiveWheelsPower()
     {
-        RLWheelCollider.motorTorque = carMotorForce;
-        RRWheelCollider.motorTorque = carMotorForce;
+        RLWheelCollider.motorTorque = 0;
+        RRWheelCollider.motorTorque = 0;
+
+        if(currentGear == AutoGear.Neutral) { return; }
+
+        if (currentGear == AutoGear.Forward)
+        {
+            RLWheelCollider.motorTorque = carMotorForce;
+            RRWheelCollider.motorTorque = carMotorForce;
+        }
+
+        if (currentGear == AutoGear.Reverse) {
+            if (rb.linearVelocity.magnitude < 9) {
+                RLWheelCollider.motorTorque = -carMotorForce;
+                RRWheelCollider.motorTorque = -carMotorForce;
+            }
+        }
     }
 
     private void GiveWheelsBrakeForce()
@@ -133,6 +204,84 @@ public class PlayerCar : MonoBehaviour
         FRWheelCollider.brakeTorque = carBrakeForce;
         RLWheelCollider.brakeTorque = carBrakeForce;
         RRWheelCollider.brakeTorque = carBrakeForce;
+    }
+
+    private void ProduceDownforce()
+    {
+        Vector3 downforce = -transform.up * velocityms * velocityms * 0.9f;
+        rb.AddForce(downforce);
+    }
+
+    private void UpdateAllWheels()
+    {
+        UpdateSingleWheel(FLWheelCollider, FLWheelTransform);
+        UpdateSingleWheel(FRWheelCollider, FRWheelTransform);
+        UpdateSingleWheel(RLWheelCollider, RLWheelTransform);
+        UpdateSingleWheel(RRWheelCollider, RRWheelTransform);
+    }
+
+    private void UpdateSingleWheel(WheelCollider wheelCollider, Transform wheelTransform)
+    {
+        Vector3 position;
+        Quaternion rotation;
+
+        wheelCollider.GetWorldPose(out position, out rotation);
+        wheelTransform.position = position;
+        wheelTransform.rotation = rotation;
+    }
+
+    private void ChangeGearAutomatic()
+    {
+        //Debug.Log(currentGear);
+
+        if (gearUpInput.WasPressedThisFrame())
+        {
+            if (currentGear == AutoGear.Reverse)
+            {
+                currentGear = AutoGear.Neutral; return;
+            }
+
+            if (currentGear == AutoGear.Neutral)
+            {
+                currentGear = AutoGear.Forward;
+            }
+        }
+
+
+        if (gearDownInput.WasPressedThisFrame())
+        {
+            if (currentGear == AutoGear.Neutral) { 
+                currentGear = AutoGear.Reverse;
+            }
+
+            if (currentGear == AutoGear.Forward)
+            {
+                currentGear = AutoGear.Neutral;
+            }
+        }
+    }
+
+    //UI
+    private void UpdateUI()
+    {
+        float velocitymph = 2.23693629f * velocityms;
+
+        velocitymph = (float)Math.Round(velocitymph * 10f) / 10f;
+
+        speedTextDisplay.text = $"{velocitymph} mph";
+
+        if (currentGear == AutoGear.Reverse) { gearTextDisplay.text = "R"; };
+        if (currentGear == AutoGear.Neutral) { gearTextDisplay.text = "N"; };
+        if (currentGear == AutoGear.Forward) { gearTextDisplay.text = "D"; };
+
+        UpdateInputUI();
+    }
+
+    private void UpdateInputUI()
+    {
+        accelerationDisplay.value = acceleratePedalPressure;
+        brakeDisplay.value = brakePedalPressure;
+        steeringDisplay.value = steeringValue;
     }
 
     //Decorative
@@ -151,7 +300,6 @@ public class PlayerCar : MonoBehaviour
         );
     }
 
-    //Camera switching
     private void CameraSwitch()
     {
         if (!switchCameraInput.WasPressedThisFrame())
@@ -174,5 +322,26 @@ public class PlayerCar : MonoBehaviour
         }
 
         Cameras[currentCameraIndex].gameObject.SetActive(true);
+    }
+
+    private void UpdateAudio()
+    {
+        engineSound.pitch = Math.Min(1, rb.linearVelocity.magnitude / 80);
+
+        //Fake gears for the time being
+
+        if(currentGear == AutoGear.Reverse)
+        {
+            engineSound.pitch = Math.Min(1, rb.linearVelocity.magnitude / 10); 
+            return;
+        }
+
+        if(velocityms < 1) { engineSound.pitch = 0.2f; return; }
+        if(velocityms < 9) { engineSound.pitch = Math.Min(1, rb.linearVelocity.magnitude / 9); return; }
+        if(velocityms < 16) { engineSound.pitch = Math.Min(1, rb.linearVelocity.magnitude / 16); return; }
+        if(velocityms < 25) { engineSound.pitch = Math.Min(1, rb.linearVelocity.magnitude / 25); return; }
+        if(velocityms < 35) { engineSound.pitch = Math.Min(1, rb.linearVelocity.magnitude / 35); return; }
+        if(velocityms < 50) { engineSound.pitch = Math.Min(1, rb.linearVelocity.magnitude / 50); return; }
+        if(velocityms < 80) { engineSound.pitch = Math.Min(1, rb.linearVelocity.magnitude / 80); return; }
     }
 }

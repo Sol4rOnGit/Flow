@@ -9,6 +9,7 @@ public class CarSpawner : MonoBehaviour
     [SerializeField] private float minDelay;
     [SerializeField] private int percentageChanceOfDoubleCars;
     [SerializeField] private GameObject[] cars;
+    [SerializeField] private bool isStrictDriving = false;
 
     void Start()
     {
@@ -77,8 +78,11 @@ public class CarSpawner : MonoBehaviour
             GameObject currentCar2 = cars[randomCarIndex2].gameObject;
 
             GameObject carInstance2 = Instantiate(currentCar2, spawnposition2.position, spawnposition2.rotation);
+
+            carInstance2.GetComponent<AICar>().isChaosAllowed = isStrictDriving ? false : true;
         }
 
+        carInstance.GetComponent<AICar>().isChaosAllowed = isStrictDriving ? false : true;
         previousBitmask = currentBitmask;
     }
 }

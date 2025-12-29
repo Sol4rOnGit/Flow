@@ -18,6 +18,8 @@ public class PlayerCar : MonoBehaviour
     InputAction gearDownInput;
 
     InputAction switchCameraInput;
+    InputAction resetCarInput;
+    private bool wasResetCarInputPressed;
 
     //Performance stats
     [Header("Performance Variables")]
@@ -38,9 +40,11 @@ public class PlayerCar : MonoBehaviour
     [SerializeField] private WheelCollider RLWheelCollider;
     [SerializeField] private WheelCollider RRWheelCollider;
 
-    //Other Car Parts
-    [Header("Other Car Parts")]
+    //Other Car Variables
+    [Header("Other Car Variables")]
     [SerializeField] private AudioSource engineSound;
+    [SerializeField] private Vector3 originalPosition;
+    [SerializeField] private Quaternion originalRotation;
     private Rigidbody rb;
 
     //Car running variables
@@ -94,6 +98,7 @@ public class PlayerCar : MonoBehaviour
         gearDownInput = vehicleMap.FindAction("GearDown");
 
         switchCameraInput = vehicleMap.FindAction("SwitchCamera");
+        resetCarInput = vehicleMap.FindAction("ResetVehicle");
 
         //Car Parts
         rb = GetComponent<Rigidbody>();
@@ -104,7 +109,8 @@ public class PlayerCar : MonoBehaviour
 
     void Start()
     {
-
+        originalPosition = this.gameObject.transform.position;
+        originalRotation = this.gameObject.transform.rotation;
     }
 
     void Update()
@@ -132,6 +138,7 @@ public class PlayerCar : MonoBehaviour
         GiveWheelsPower();
         GiveWheelsBrakeForce();
         UpdateAllWheels();
+        ResetCar();
     }
     private void OnEnable()
     {
@@ -143,6 +150,7 @@ public class PlayerCar : MonoBehaviour
         gearDownInput.Enable();
 
         switchCameraInput.Enable();
+        resetCarInput.Enable();
     }
 
     private void OnDisable()
@@ -155,6 +163,7 @@ public class PlayerCar : MonoBehaviour
         gearDownInput.Disable();
 
         switchCameraInput.Disable();
+        resetCarInput.Disable();
     }
 
     private void GetInput()
@@ -162,8 +171,13 @@ public class PlayerCar : MonoBehaviour
         acceleratePedalPressure = accelerateInput.ReadValue<float>();
         brakePedalPressure = brakeInput.ReadValue<float>();
         steeringValue = steeringInput.ReadValue<float>();
-    }
 
+        if (resetCarInput.WasPressedThisFrame())
+        {
+            wasResetCarInputPressed = true;
+        }
+    }
+    
     private void CalculateSteering()
     {
         var currentSteeringAngle = maxSteeringAngleDegrees * steeringValue;
@@ -260,6 +274,51 @@ public class PlayerCar : MonoBehaviour
             }
         }
     }
+
+    //Reset Car
+    private void ResetCar()
+    {
+        if (wasResetCarInputPressed)
+        {
+            ResetWheelColliders();
+
+            //Teleport to spawn location
+            rb.position = originalPosition;
+            rb.rotation = originalRotation;
+
+            //Set gear to 0
+            currentGear = AutoGear.Neutral;
+
+            //Reset inertia
+            rb.linearVelocity = new Vector3(0f, 0f, 0f);
+            rb.angularVelocity = new Vector3(0f, 0f, 0f);
+            rb.Sleep();
+
+            wasResetCarInputPressed = false;
+
+            //this.gameObject.transform.position = originalPosition;
+            //this.gameObject.transform.rotation = originalRotation;
+        }
+    }
+
+    private void ResetWheelColliders()
+    {
+        WheelCollider[] wheels =
+        {
+            FLWheelCollider,
+            FRWheelCollider,
+            RLWheelCollider,
+            RRWheelCollider
+        };
+
+        foreach (var wheel in wheels)
+        {
+            wheel.motorTorque = 0f;
+            wheel.brakeTorque = Mathf.Infinity; // hard lock
+            wheel.steerAngle = 0f;
+        }
+    }
+
 
     //UI
     private void UpdateUI()

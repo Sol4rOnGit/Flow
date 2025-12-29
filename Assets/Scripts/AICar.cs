@@ -5,6 +5,8 @@ using UnityEngine;
 public class AICar : MonoBehaviour
 {
     public float drivingSpeed = 30;
+    public bool isChaosAllowed = true;
+
     private Rigidbody rb;
     private bool isChaosMode = false;
 
@@ -45,6 +47,11 @@ public class AICar : MonoBehaviour
 
     private void OnCollisionEnter(Collision other)
     {
+        if (!isChaosAllowed)
+        {
+            return;
+        }
+
         if (other.gameObject.CompareTag("Player") || other.gameObject.CompareTag("Car")){
             StartCoroutine(onCrash());
         }

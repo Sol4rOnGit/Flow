@@ -7,6 +7,7 @@ public class CarSpawner : MonoBehaviour
     [SerializeField] private GameObject[] lanes;
     [SerializeField] private float maxDelay;
     [SerializeField] private float minDelay;
+    [SerializeField] private int percentageChanceOfDoubleCars;
     [SerializeField] private GameObject[] cars;
 
     void Start()
@@ -34,8 +35,13 @@ public class CarSpawner : MonoBehaviour
         }
     }
 
+    int currentBitmask;
+    int previousBitmask;
+
     private void SpawnCar()
     {
+        currentBitmask = 0;
+
         int randomLaneIndex = Random.Range(0, lanes.Length);
         Transform spawnposition = lanes[randomLaneIndex].transform;
 
@@ -44,15 +50,26 @@ public class CarSpawner : MonoBehaviour
 
         GameObject carInstance = Instantiate(currentCar, spawnposition.position, spawnposition.rotation);
 
+        currentBitmask |= 1 << randomLaneIndex;
+
         //Small chance of another car spawning on another lane
         int randomInt = Random.Range(1, 100);
-        if(randomInt < 20) //1 in 5 cars
+        if (randomInt < (percentageChanceOfDoubleCars + 1))
         {
             int randomLaneIndex2 = randomLaneIndex;
+            int modifiedCurrentBitmask;
             do
             {
                 randomLaneIndex2 = Random.Range(0, lanes.Length);
-            } while (randomLaneIndex2 == randomLaneIndex);
+                modifiedCurrentBitmask = currentBitmask;
+                modifiedCurrentBitmask |= 1 << randomLaneIndex2;
+                //currentBitmask |= 1 << randomLaneIndex2; corrupts the bitmask
+            } while
+            (
+                randomLaneIndex2 == randomLaneIndex || (previousBitmask == 3 && modifiedCurrentBitmask == 6) || (previousBitmask == 6 && modifiedCurrentBitmask == 3)
+            );
+
+            currentBitmask = modifiedCurrentBitmask;
 
             Transform spawnposition2 = lanes[randomLaneIndex2].transform;
 
@@ -61,6 +78,8 @@ public class CarSpawner : MonoBehaviour
 
             GameObject carInstance2 = Instantiate(currentCar2, spawnposition2.position, spawnposition2.rotation);
         }
+
+        previousBitmask = currentBitmask;
     }
 }
 

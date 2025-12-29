@@ -168,7 +168,7 @@ public partial class @InputSystemActions: IInputActionCollection2, IDisposable
                     ""name"": ""Sprint"",
                     ""type"": ""Button"",
                     ""id"": ""641cd816-40e6-41b4-8c3d-04687c349290"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -1135,6 +1135,15 @@ public partial class @InputSystemActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ResetVehicle"",
+                    ""type"": ""Button"",
+                    ""id"": ""12110972-a15b-4aad-8083-39ac5704d547"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -1324,6 +1333,28 @@ public partial class @InputSystemActions: IInputActionCollection2, IDisposable
                     ""action"": ""GearDown"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""588b4ab4-0d09-4d7c-b60c-7afed4c78567"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ResetVehicle"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ed642a5d-3c52-48c2-bec7-4ef73ae4396f"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ResetVehicle"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -1422,6 +1453,7 @@ public partial class @InputSystemActions: IInputActionCollection2, IDisposable
         m_Vehicle_SwitchCamera = m_Vehicle.FindAction("SwitchCamera", throwIfNotFound: true);
         m_Vehicle_GearUp = m_Vehicle.FindAction("GearUp", throwIfNotFound: true);
         m_Vehicle_GearDown = m_Vehicle.FindAction("GearDown", throwIfNotFound: true);
+        m_Vehicle_ResetVehicle = m_Vehicle.FindAction("ResetVehicle", throwIfNotFound: true);
     }
 
     ~@InputSystemActions()
@@ -1889,6 +1921,7 @@ public partial class @InputSystemActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Vehicle_SwitchCamera;
     private readonly InputAction m_Vehicle_GearUp;
     private readonly InputAction m_Vehicle_GearDown;
+    private readonly InputAction m_Vehicle_ResetVehicle;
     /// <summary>
     /// Provides access to input actions defined in input action map "Vehicle".
     /// </summary>
@@ -1924,6 +1957,10 @@ public partial class @InputSystemActions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Vehicle/GearDown".
         /// </summary>
         public InputAction @GearDown => m_Wrapper.m_Vehicle_GearDown;
+        /// <summary>
+        /// Provides access to the underlying input action "Vehicle/ResetVehicle".
+        /// </summary>
+        public InputAction @ResetVehicle => m_Wrapper.m_Vehicle_ResetVehicle;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1968,6 +2005,9 @@ public partial class @InputSystemActions: IInputActionCollection2, IDisposable
             @GearDown.started += instance.OnGearDown;
             @GearDown.performed += instance.OnGearDown;
             @GearDown.canceled += instance.OnGearDown;
+            @ResetVehicle.started += instance.OnResetVehicle;
+            @ResetVehicle.performed += instance.OnResetVehicle;
+            @ResetVehicle.canceled += instance.OnResetVehicle;
         }
 
         /// <summary>
@@ -1997,6 +2037,9 @@ public partial class @InputSystemActions: IInputActionCollection2, IDisposable
             @GearDown.started -= instance.OnGearDown;
             @GearDown.performed -= instance.OnGearDown;
             @GearDown.canceled -= instance.OnGearDown;
+            @ResetVehicle.started -= instance.OnResetVehicle;
+            @ResetVehicle.performed -= instance.OnResetVehicle;
+            @ResetVehicle.canceled -= instance.OnResetVehicle;
         }
 
         /// <summary>
@@ -2293,5 +2336,12 @@ public partial class @InputSystemActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnGearDown(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ResetVehicle" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnResetVehicle(InputAction.CallbackContext context);
     }
 }

@@ -1,5 +1,8 @@
 using System.Collections;
+using System.ComponentModel;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class CarSpawner : MonoBehaviour
 {
@@ -41,17 +44,26 @@ public class CarSpawner : MonoBehaviour
 
     private void SpawnCar()
     {
+        //Reset bitmask
         currentBitmask = 0;
 
-        int randomLaneIndex = Random.Range(0, lanes.Length);
-        Transform spawnposition = lanes[randomLaneIndex].transform;
-
+        //Select a Random Car
         int randomCarIndex = Random.Range(0, cars.Length);
         GameObject currentCar = cars[randomCarIndex].gameObject;
 
-        GameObject carInstance = Instantiate(currentCar, spawnposition.position, spawnposition.rotation);
+        //Select a random lane (that isn't 010)
+        int randomLaneIndex = 0;
+        Transform spawnposition = null;
 
-        currentBitmask |= 1 << randomLaneIndex;
+        while (currentBitmask == 2 || currentBitmask == 0)
+        {
+            //Select a random Lane
+            randomLaneIndex = Random.Range(0, lanes.Length);
+            spawnposition = lanes[randomLaneIndex].transform;
+
+            //Set Bitmask
+            currentBitmask |= 1 << randomLaneIndex;
+        }
 
         //Small chance of another car spawning on another lane
         int randomInt = Random.Range(1, 100);
@@ -81,6 +93,9 @@ public class CarSpawner : MonoBehaviour
 
             carInstance2.GetComponent<AICar>().isChaosAllowed = isStrictDriving ? false : true;
         }
+
+        //Spawn the random car
+        GameObject carInstance = Instantiate(currentCar, spawnposition.position, spawnposition.rotation);
 
         carInstance.GetComponent<AICar>().isChaosAllowed = isStrictDriving ? false : true;
         previousBitmask = currentBitmask;

@@ -964,25 +964,25 @@ WheelCollider:
   m_Center: {x: 0, y: 0, z: 0.13}
   m_Radius: 0.33
   m_SuspensionSpring:
-    spring: 70000
-    damper: 9000
+    spring: 350000
+    damper: 4500
     targetPosition: 0.5
   m_SuspensionDistance: 0.3
-  m_ForceAppPointDistance: 0.2
+  m_ForceAppPointDistance: 0
   m_Mass: 20
-  m_WheelDampingRate: 1
+  m_WheelDampingRate: 0.25
   m_ForwardFriction:
     m_ExtremumSlip: 0.4
-    m_ExtremumValue: 2
+    m_ExtremumValue: 1
     m_AsymptoteSlip: 0.8
-    m_AsymptoteValue: 1
+    m_AsymptoteValue: 0.5
     m_Stiffness: 1
   m_SidewaysFriction:
-    m_ExtremumSlip: 0.4
-    m_ExtremumValue: 3
-    m_AsymptoteSlip: 0.8
-    m_AsymptoteValue: 1
-    m_Stiffness: 1.4
+    m_ExtremumSlip: 0.2
+    m_ExtremumValue: 1
+    m_AsymptoteSlip: 0.5
+    m_AsymptoteValue: 0.75
+    m_Stiffness: 1
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -1035,25 +1035,25 @@ WheelCollider:
   m_Center: {x: 0, y: 0, z: 0.13}
   m_Radius: 0.38
   m_SuspensionSpring:
-    spring: 70000
-    damper: 9000
+    spring: 350000
+    damper: 6000
     targetPosition: 0.5
   m_SuspensionDistance: 0.3
-  m_ForceAppPointDistance: 0.2
+  m_ForceAppPointDistance: 0
   m_Mass: 20
-  m_WheelDampingRate: 1
+  m_WheelDampingRate: 0.25
   m_ForwardFriction:
     m_ExtremumSlip: 0.4
-    m_ExtremumValue: 2
+    m_ExtremumValue: 1
     m_AsymptoteSlip: 0.8
-    m_AsymptoteValue: 1
-    m_Stiffness: 1
+    m_AsymptoteValue: 0.5
+    m_Stiffness: 2.5
   m_SidewaysFriction:
-    m_ExtremumSlip: 0.4
-    m_ExtremumValue: 3
-    m_AsymptoteSlip: 0.8
+    m_ExtremumSlip: 0.2
+    m_ExtremumValue: 1
+    m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 1
-    m_Stiffness: 1.4
+    m_Stiffness: 3
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -2185,25 +2185,25 @@ WheelCollider:
   m_Center: {x: 0, y: 0, z: 0.13}
   m_Radius: 0.33
   m_SuspensionSpring:
-    spring: 70000
-    damper: 9000
+    spring: 350000
+    damper: 4500
     targetPosition: 0.5
   m_SuspensionDistance: 0.3
-  m_ForceAppPointDistance: 0.2
+  m_ForceAppPointDistance: 0
   m_Mass: 20
-  m_WheelDampingRate: 1
+  m_WheelDampingRate: 0.25
   m_ForwardFriction:
     m_ExtremumSlip: 0.4
-    m_ExtremumValue: 2
+    m_ExtremumValue: 1
     m_AsymptoteSlip: 0.8
-    m_AsymptoteValue: 1
+    m_AsymptoteValue: 0.5
     m_Stiffness: 1
   m_SidewaysFriction:
-    m_ExtremumSlip: 0.4
-    m_ExtremumValue: 3
-    m_AsymptoteSlip: 0.8
-    m_AsymptoteValue: 1
-    m_Stiffness: 1.4
+    m_ExtremumSlip: 0.2
+    m_ExtremumValue: 1
+    m_AsymptoteSlip: 0.5
+    m_AsymptoteValue: 0.75
+    m_Stiffness: 1
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -2256,25 +2256,25 @@ WheelCollider:
   m_Center: {x: 0, y: 0, z: 0.13}
   m_Radius: 0.38
   m_SuspensionSpring:
-    spring: 70000
-    damper: 9000
+    spring: 350000
+    damper: 4500
     targetPosition: 0.5
   m_SuspensionDistance: 0.3
-  m_ForceAppPointDistance: 0.2
+  m_ForceAppPointDistance: 0
   m_Mass: 20
-  m_WheelDampingRate: 1
+  m_WheelDampingRate: 0.25
   m_ForwardFriction:
     m_ExtremumSlip: 0.4
-    m_ExtremumValue: 2
+    m_ExtremumValue: 1
     m_AsymptoteSlip: 0.8
-    m_AsymptoteValue: 1
+    m_AsymptoteValue: 0.5
     m_Stiffness: 1
   m_SidewaysFriction:
-    m_ExtremumSlip: 0.4
-    m_ExtremumValue: 3
-    m_AsymptoteSlip: 0.8
-    m_AsymptoteValue: 1
-    m_Stiffness: 1.4
+    m_ExtremumSlip: 0.2
+    m_ExtremumValue: 1
+    m_AsymptoteSlip: 0.5
+    m_AsymptoteValue: 0.75
+    m_Stiffness: 1
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -3151,6 +3151,7 @@ MonoBehaviour:
   engineForce: 2000
   maxBrakeForce: 3000
   maxSteeringAngleDegrees: 23
+  arcadeHandling: 1
   FLWheelTransform: {fileID: 6247228736397787109}
   FRWheelTransform: {fileID: 1686782300942915390}
   RLWheelTransform: {fileID: 1052726221227052191}
@@ -3160,6 +3161,8 @@ MonoBehaviour:
   RLWheelCollider: {fileID: 7178369153113621323}
   RRWheelCollider: {fileID: 8869552557778584474}
   engineSound: {fileID: 3672053333357745412}
+  originalPosition: {x: 0, y: 0, z: 0}
+  originalRotation: {x: 0, y: 0, z: 0, w: 0}
   Cameras:
   - {fileID: 8596734381332946242}
   - {fileID: 316596634328516912}

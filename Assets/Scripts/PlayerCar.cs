@@ -27,6 +27,8 @@ public class PlayerCar : MonoBehaviour
     [SerializeField] private int maxBrakeForce = 500;
 
     [SerializeField] private int maxSteeringAngleDegrees = 23;
+    private float minSteeringAngle = 9f;
+    [SerializeField] private bool arcadeHandling = true;
 
     //Wheel transforms & Colliders
     [Header("Wheel transforms and Colliders")]
@@ -52,7 +54,8 @@ public class PlayerCar : MonoBehaviour
     private float brakePedalPressure = 0;
     private float steeringValue = 0;
 
-    private float velocityms = 0;
+    private float velocityms;
+    private float velocitymph;
 
     private enum AutoGear
     {
@@ -116,6 +119,7 @@ public class PlayerCar : MonoBehaviour
     void Update()
     {
         velocityms = rb.linearVelocity.magnitude;
+        velocitymph = 2.23693629f * velocityms;
 
         GetInput();
         ChangeGearAutomatic();
@@ -180,7 +184,20 @@ public class PlayerCar : MonoBehaviour
     
     private void CalculateSteering()
     {
-        var currentSteeringAngle = maxSteeringAngleDegrees * steeringValue;
+        float currentSteeringAngle = maxSteeringAngleDegrees;
+
+        //If arcade handling - reduce the steering angle with speed factor
+        if (arcadeHandling)
+        {
+            float speedFactor = Mathf.Clamp01(velocitymph/70);
+
+            float curve = Mathf.Pow(speedFactor, 2);
+
+            float currentMaxAngle = Mathf.Lerp(maxSteeringAngleDegrees, minSteeringAngle, curve);
+
+            currentSteeringAngle = currentMaxAngle * steeringValue;
+        }
+
         FLWheelCollider.steerAngle = currentSteeringAngle;
         FRWheelCollider.steerAngle = currentSteeringAngle;
     }
@@ -314,7 +331,7 @@ public class PlayerCar : MonoBehaviour
         foreach (var wheel in wheels)
         {
             wheel.motorTorque = 0f;
-            wheel.brakeTorque = Mathf.Infinity; // hard lock
+            wheel.brakeTorque = 10000f; // hard lock
             wheel.steerAngle = 0f;
         }
     }
@@ -323,11 +340,9 @@ public class PlayerCar : MonoBehaviour
     //UI
     private void UpdateUI()
     {
-        float velocitymph = 2.23693629f * velocityms;
+        float roundedvelocitymph = (float)Math.Round(velocitymph * 10f) / 10f;
 
-        velocitymph = (float)Math.Round(velocitymph * 10f) / 10f;
-
-        speedTextDisplay.text = $"{velocitymph} mph";
+        speedTextDisplay.text = $"{roundedvelocitymph} mph";
 
         if (currentGear == AutoGear.Reverse) { gearTextDisplay.text = "R"; };
         if (currentGear == AutoGear.Neutral) { gearTextDisplay.text = "N"; };

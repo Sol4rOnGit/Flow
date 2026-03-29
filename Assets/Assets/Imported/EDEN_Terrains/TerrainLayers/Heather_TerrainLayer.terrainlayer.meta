@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 8df0a4a2d0f67bf4f8ac98cf02732bfe
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 8574412962073106934
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 249806
+  packageName: EDEN - Terrain Package
+  packageVersion: 1.0
+  assetPath: Assets/EDEN_Terrains/TerrainLayers/Heather_TerrainLayer.terrainlayer
+  uploadId: 584508

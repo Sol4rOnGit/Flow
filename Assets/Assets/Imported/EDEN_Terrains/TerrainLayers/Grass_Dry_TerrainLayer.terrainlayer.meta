@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: fbe26b0bb23e9df43ac35719717d28b3
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 8574412962073106934
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 249806
+  packageName: EDEN - Terrain Package
+  packageVersion: 1.0
+  assetPath: Assets/EDEN_Terrains/TerrainLayers/Grass_Dry_TerrainLayer.terrainlayer
+  uploadId: 584508

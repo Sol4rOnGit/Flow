@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 0f0891c6aa8462946a8c89f041007a54
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 15600000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 249806
+  packageName: EDEN - Terrain Package
+  packageVersion: 1.0
+  assetPath: Assets/EDEN_Terrains/TerrainData/Canyons.asset
+  uploadId: 584508

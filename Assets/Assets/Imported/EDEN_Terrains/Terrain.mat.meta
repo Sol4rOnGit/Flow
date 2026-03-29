@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 9f779ddc37ca38e479995f10b13ca63e
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 249806
+  packageName: EDEN - Terrain Package
+  packageVersion: 1.0
+  assetPath: Assets/EDEN_Terrains/Terrain.mat
+  uploadId: 584508

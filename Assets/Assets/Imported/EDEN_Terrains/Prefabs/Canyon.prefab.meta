@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: a2671ba8fe154a24aba189e3cdf78209
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 249806
+  packageName: EDEN - Terrain Package
+  packageVersion: 1.0
+  assetPath: Assets/EDEN_Terrains/Prefabs/Canyon.prefab
+  uploadId: 584508

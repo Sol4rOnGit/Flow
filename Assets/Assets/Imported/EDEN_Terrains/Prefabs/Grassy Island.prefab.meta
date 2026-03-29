@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: ad5d8fe542af63b4b94960b1cddddfca
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 249806
+  packageName: EDEN - Terrain Package
+  packageVersion: 1.0
+  assetPath: Assets/EDEN_Terrains/Prefabs/Grassy Island.prefab
+  uploadId: 584508

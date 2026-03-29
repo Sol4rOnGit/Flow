@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 8cb406b70813afc478543faf970e6e2a
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 15600000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 249806
+  packageName: EDEN - Terrain Package
+  packageVersion: 1.0
+  assetPath: Assets/EDEN_Terrains/TerrainData/Desert Island.asset
+  uploadId: 584508

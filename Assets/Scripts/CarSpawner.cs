@@ -12,7 +12,10 @@ public class CarSpawner : MonoBehaviour
     [SerializeField] private float minDelay;
     [SerializeField] private int percentageChanceOfDoubleCars;
     [SerializeField] private GameObject[] cars;
+
+    [Header("Reversal & Strictness")]
     [SerializeField] private bool isStrictDriving = false;
+    [SerializeField] private bool isReversed = false;
 
     void Start()
     {
@@ -65,7 +68,7 @@ public class CarSpawner : MonoBehaviour
             currentBitmask |= 1 << randomLaneIndex;
         }
 
-        //Small chance of another car spawning on another lane
+        //Chance of another car spawning on another lane
         int randomInt = Random.Range(1, 100);
         if (randomInt < (percentageChanceOfDoubleCars + 1))
         {
@@ -76,14 +79,15 @@ public class CarSpawner : MonoBehaviour
                 randomLaneIndex2 = Random.Range(0, lanes.Length);
                 modifiedCurrentBitmask = currentBitmask;
                 modifiedCurrentBitmask |= 1 << randomLaneIndex2;
-                //currentBitmask |= 1 << randomLaneIndex2; corrupts the bitmask
             } while
             (
                 randomLaneIndex2 == randomLaneIndex || (previousBitmask == 3 && modifiedCurrentBitmask == 6) || (previousBitmask == 6 && modifiedCurrentBitmask == 3)
             );
 
+            //Set currentBitmask to new valid bitmask with two cars
             currentBitmask = modifiedCurrentBitmask;
 
+            //Spawn second car
             Transform spawnposition2 = lanes[randomLaneIndex2].transform;
 
             int randomCarIndex2 = Random.Range(0, cars.Length);
@@ -91,20 +95,19 @@ public class CarSpawner : MonoBehaviour
 
             GameObject carInstance2 = Instantiate(currentCar2, spawnposition2.position, spawnposition2.rotation);
 
+            //Set AI car 2 Flags
             carInstance2.GetComponent<AICar>().isChaosAllowed = isStrictDriving ? false : true;
+            if (isReversed) { carInstance2.GetComponent<AICar>().isReversed = true; }
         }
 
         //Spawn the random car
         GameObject carInstance = Instantiate(currentCar, spawnposition.position, spawnposition.rotation);
 
+        //Set AI Car flags
         carInstance.GetComponent<AICar>().isChaosAllowed = isStrictDriving ? false : true;
+        if (isReversed) { carInstance.GetComponent<AICar>().isReversed = true; }
+
+        //Set previousBitmask
         previousBitmask = currentBitmask;
     }
-}
-
-public class TrafficCarData
-{
-    public float positionX;
-    public int laneIndex;
-    public float speed;
 }

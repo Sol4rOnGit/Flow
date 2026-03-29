@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: e283d5b3ca20b7745a0447366cb227b5
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 249806
+  packageName: EDEN - Terrain Package
+  packageVersion: 1.0
+  assetPath: Assets/EDEN_Terrains/Demo/Terrains_Demo.unity
+  uploadId: 584508

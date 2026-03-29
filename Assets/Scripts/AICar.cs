@@ -6,6 +6,7 @@ public class AICar : MonoBehaviour
 {
     public float drivingSpeed = 30;
     public bool isChaosAllowed = true;
+    public bool isReversed = false;
 
     private Rigidbody rb;
     private bool isChaosMode = false;
@@ -14,15 +15,25 @@ public class AICar : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         rb.isKinematic = false;
+        rb.constraints = RigidbodyConstraints.FreezeRotation;
+        if (isReversed)
+        {
+            //drivingSpeed *= -1;
+            transform.Rotate(0f, 180f, 0f);
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(transform.position.y < -40)
-        {
+        //Destroy if below
+        if(transform.position.y < -40) {
             Destroy(gameObject);
         }
+
+        //Destroy if out of bounds
+        if (isReversed) { if (transform.position.x < 45) { Destroy(gameObject); } }
+        else { if (transform.position.x > 2745) { Destroy(gameObject); } }
     }
 
     private void FixedUpdate()
@@ -60,8 +71,9 @@ public class AICar : MonoBehaviour
 
     private IEnumerator onCrash()
     {
-        WaitForSeconds cooldown = new WaitForSeconds(10.0f);
+        WaitForSeconds cooldown = new WaitForSeconds(5.0f);
         isChaosMode = true;
+        rb.constraints = RigidbodyConstraints.None;
         yield return cooldown;
 
         Destroy(gameObject);

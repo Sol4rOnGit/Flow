@@ -8,14 +8,11 @@
     Audio
     UI
     Motorway road
+    R to respawn
+    "AI" Cars on the motorway
+    Cars to spawn and despawn
 
  * TO DO
-
-    . R to respawn
-
-    . "AI" Cars on the motorway
-
-    . Cars to spawn and despawn
 
     . Add tunnels up and down on the motorway (still on one fwd axis tho)
 

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: b3586769669c919439297fee5dca7914
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 15600000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 249806
+  packageName: EDEN - Terrain Package
+  packageVersion: 1.0
+  assetPath: Assets/EDEN_Terrains/TerrainData/Grassy Island.asset
+  uploadId: 584508
